@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Peminjaman Arsip - Kejaksaan Negeri Kota Bekasi</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100%;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(30, 60, 114, 0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .logo svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            background: #1e3c72;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            border-bottom-color: #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #757575 0%, #616161 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .card h3 {
+            margin: 0 0 15px;
+            color: #1e3c72;
+            font-size: 18px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.returned {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #757575;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #757575;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+            }
+            
+            .nav-item {
+                text-align: center;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table {
+                font-size: 12px;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+            
+            .table thead, .table tbody, .table th, .table td, .table tr {
+                display: block;
+            }
+            
+            .table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            .table tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                white-space: normal;
+            }
+            
+            .table td {
+                border: none;
+                position: relative;
+                padding: 8px 8px 8px 35%;
+                text-align: left;
+                white-space: normal;
+            }
+            
+            .table td:before {
+                content: attr(data-label) ": ";
+                position: absolute;
+                left: 6px;
+                width: 30%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #1e3c72;
+            }
+            
+            .btn {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin: 2px;
+                display: inline-block;
+                min-width: auto;
+            }
+            
+            .table .btn {
+                width: auto;
+                margin: 2px 5px 2px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V6C21 6.55228 20.5523 7 20 7H4C3.44772 7 3 6.55228 3 6V4Z" fill="#1e3c72"/>
+                    <path d="M4 9H20V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V9Z" fill="#667eea"/>
+                    <path d="M7 12H17V13H7V12Z" fill="white"/>
+                    <path d="M7 15H14V16H7V15Z" fill="white"/>
+                    <path d="M7 18H11V19H7V18Z" fill="white"/>
+                    <circle cx="18" cy="5" r="1" fill="#764ba2"/>
+                    <circle cx="16" cy="5" r="1" fill="#764ba2"/>
+                </svg>
+            </div>
+            <h1>SISTEM PEMINJAMAN ARSIP</h1>
+            <p>Kejaksaan Negeri Kota Bekasi</p>
+        </header>
+
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="showPage('dashboard')">📊 Dashboard</button>
+            <button class="nav-item" onclick="showPage('peminjaman')">📝 Peminjaman Baru</button>
+            <button class="nav-item" onclick="showPage('tracking')">🔍 Tracking</button>
+            <button class="nav-item" onclick="showPage('laporan')">📈 Laporan</button>
+            <button class="nav-item" onclick="showPage('pengaturan')">⚙️ Pengaturan</button>
+        </nav>
+
+        <main class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <h2>Dashboard Peminjaman Arsip</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPeminjaman">0</div>
+                        <div class="stat-label">Total Peminjaman</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="menungguPersetujuan">0</div>
+                        <div class="stat-label">Menunggu Persetujuan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="sedangDipinjam">0</div>
+                        <div class="stat-label">Sedang Dipinjam</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Peminjaman Terbaru</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Peminjaman</th>
+                                <th>Peminjam</th>
+                                <th>Arsip</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentLoans">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #757575;">Belum ada data peminjaman</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Peminjaman Baru Page -->
+            <div id="peminjaman" class="page">
+                <h2>Form Peminjaman Arsip Baru</h2>
+                
+                <div id="alertContainer"></div>
+                
+                <div class="card">
+                    <h3>Data Peminjam</h3>
+                    <form id="peminjamanForm">
+                        <div class="form-group">
+                            <label for="namaPeminjam">Nama Lengkap *</label>
+                            <input type="text" id="namaPeminjam" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nipPeminjam">NIP/NIK *</label>
+                            <input type="text" id="nipPeminjam" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jabatan">Jabatan/Unit Kerja *</label>
+                            <input type="text" id="jabatan" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Data Arsip yang Dipinjam</h3>
+                    <div class="form-group">
+                        <label for="kodeArsip">Kode Arsip *</label>
+                        <select id="kodeArsip" required>
+                            <option value="">Pilih Arsip</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="keperluan">Keperluan Peminjaman *</label>
+                        <textarea id="keperluan" rows="4" placeholder="Jelaskan keperluan peminjaman arsip..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tanggalPinjam">Tanggal Peminjaman *</label>
+                        <input type="date" id="tanggalPinjam" required>
+                    </div>
+                    
+                    <button type="button" class="btn" onclick="submitPeminjaman()">📤 Ajukan Peminjaman</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset Form</button>
+                </div>
+            </div>
+
+            <!-- Tracking Page -->
+            <div id="tracking" class="page">
+                <h2>Tracking Peminjaman</h2>
+                
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchTracking" placeholder="Masukkan nomor peminjaman atau nama peminjam...">
+                </div>
+                
+                <div class="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Peminjaman</th>
+                                <th>Peminjam</th>
+                                <th>Arsip</th>
+                                <th>Tgl. Pinjam</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trackingTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Laporan Page -->
+            <div id="laporan" class="page">
+                <h2>Laporan Peminjaman</h2>
+                
+                <div class="card">
+                    <h3>Filter Laporan</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="form-group">
+                            <label for="filterBulan">Bulan</label>
+                            <select id="filterBulan">
+                                <option value="">Semua Bulan</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filterTahun">Tahun</label>
+                            <select id="filterTahun">
+                                <option value="">Semua Tahun</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filterStatus">Status</label>
+                            <select id="filterStatus">
+                                <option value="">Semua Status</option>
+                                <option value="pending">Menunggu</option>
+                                <option value="approved">Disetujui</option>
+                                <option value="returned">Dikembalikan</option>
+                                <option value="rejected">Ditolak</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="generateLaporan()">📊 Generate Laporan</button>
+                    <button class="btn btn-secondary" onclick="exportLaporan()">📥 Export Excel</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Hasil Laporan</h3>
+                    <div id="laporanResult">
+                        <p style="text-align: center; color: #757575;">Klik "Generate Laporan" untuk melihat hasil</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pengaturan Page -->
+            <div id="pengaturan" class="page">
+                <h2>Pengaturan Sistem</h2>
+                
+                <div class="card">
+                    <h3>📊 Informasi Penyimpanan</h3>
+                    <div id="storageInfo">
+                        <p>Memuat informasi penyimpanan...</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="refreshStorageInfo()">🔄 Refresh Info</button>
+                </div>
+
+                <div class="card">
+                    <h3>💾 Backup & Restore Data</h3>
+                    <p>Kelola data sistem dengan fitur backup dan restore untuk keamanan data Anda.</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4>Export Data</h4>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                            Download semua data sebagai file JSON untuk backup atau transfer ke sistem lain.
+                        </p>
+                        <button class="btn" onclick="exportData()">📥 Export Semua Data</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4>Import Data</h4>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                            Upload file JSON untuk mengganti semua data sistem. <strong>Perhatian:</strong> Data saat ini akan terhapus!
+                        </p>
+                        <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="margin-bottom: 10px;">
+                        <br>
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📤 Pilih File Import</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🗑️ Manajemen Data</h3>
+                    <p>Kelola dan bersihkan data sistem.</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4>Hapus Data Lama</h4>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                            Hapus data peminjaman yang sudah dikembalikan lebih dari 1 tahun.
+                        </p>
+                        <button class="btn btn-secondary" onclick="cleanOldData()">🧹 Bersihkan Data Lama</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4>Reset Sistem</h4>
+                        <p style="font-size: 14px; color: #dc3545; margin-bottom: 10px;">
+                            <strong>PERINGATAN:</strong> Menghapus SEMUA data dan mengembalikan ke pengaturan awal.
+                        </p>
+                        <button class="btn btn-danger" onclick="clearAllData()">⚠️ Reset Semua Data</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>ℹ️ Informasi Sistem</h3>
+                    <div style="font-size: 14px; line-height: 1.6;">
+                        <p><strong>Versi Sistem:</strong> 1.0.0</p>
+                        <p><strong>Kompatibilitas:</strong> Chrome, Firefox, Safari, Edge</p>
+                        <p><strong>Penyimpanan:</strong> HTML5 localStorage</p>
+                        <p><strong>Kapasitas Maksimal:</strong> ~5-10 MB (tergantung browser)</p>
+                        <p><strong>Backup Otomatis:</strong> Setiap 30 detik</p>
+                        <p><strong>Developed by:</strong> Sistem Arsip Kejaksaan</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔧 Troubleshooting</h3>
+                    <div style="font-size: 14px;">
+                        <h4>Jika mengalami masalah:</h4>
+                        <ol>
+                            <li>Refresh halaman (F5 atau Ctrl+R)</li>
+                            <li>Bersihkan cache browser</li>
+                            <li>Pastikan JavaScript diaktifkan</li>
+                            <li>Export data sebelum reset sistem</li>
+                            <li>Gunakan browser yang didukung</li>
+                        </ol>
+                        
+                        <h4 style="margin-top: 20px;">Pesan Error Umum:</h4>
+                        <ul>
+                            <li><strong>"Penyimpanan penuh":</strong> Hapus data lama atau bersihkan cache</li>
+                            <li><strong>"Data tidak tersimpan":</strong> Periksa pengaturan browser</li>
+                            <li><strong>"Format file tidak valid":</strong> Pastikan file JSON benar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Detail Arsip -->
+    <div id="modalDetailArsip" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalDetailArsip')">&times;</span>
+            <h3>Detail Arsip</h3>
+            <div id="detailArsipContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal Update Status -->
+    <div id="modalUpdateStatus" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalUpdateStatus')">&times;</span>
+            <h3>Update Status Peminjaman</h3>
+            <div id="updateStatusContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage with localStorage support
+        const STORAGE_KEYS = {
+            ARSIP_DATA: 'kejaksaan_arsip_data',
+            PEMINJAMAN_DATA: 'kejaksaan_peminjaman_data',
+            CURRENT_ID: 'kejaksaan_current_id',
+            LAST_BACKUP: 'kejaksaan_last_backup'
+        };
+
+        // Default data
+        const defaultArsipData = [
+            { kode: 'ARS-2024-001', judul: 'Berkas Perkara Pidana Umum No. 123/Pid.B/2024/PN.Bks', kategori: 'Pidana', tahun: 2024, status: 'Tersedia' },
+            { kode: 'ARS-2024-002', judul: 'Berkas Perkara Perdata No. 45/Pdt.G/2024/PN.Bks', kategori: 'Perdata', tahun: 2024, status: 'Tersedia' },
+            { kode: 'ARS-2024-003', judul: 'Surat Dakwaan Kasus Korupsi No. 67/Pid.Sus/2024/PN.Bks', kategori: 'Tipikor', tahun: 2024, status: 'Dipinjam' },
+            { kode: 'ARS-2023-045', judul: 'Berkas Eksekusi Putusan No. 89/Eks/2023/PN.Bks', kategori: 'Eksekusi', tahun: 2023, status: 'Tersedia' },
+            { kode: 'ARS-2023-078', judul: 'Dokumen Penyidikan Kasus Narkoba No. 12/Pid.Sus/2023/PN.Bks', kategori: 'Narkoba', tahun: 2023, status: 'Tersedia' }
+        ];
+
+        let arsipData = [];
+        let peminjamanData = [];
+        let currentPeminjamanId = 1;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeStorage();
+            loadDataFromStorage();
+            loadArsipOptions();
+            updateDashboard();
+            setDefaultDates();
+            
+            // Search functionality
+            document.getElementById('searchTracking').addEventListener('input', filterTracking);
+            
+            // Auto-save every 30 seconds
+            setInterval(saveAllDataToStorage, 30000);
+            
+            // Save before page unload
+            window.addEventListener('beforeunload', saveAllDataToStorage);
+        });
+
+        // Initialize localStorage with default data if empty
+        function initializeStorage() {
+            try {
+                // Check if localStorage is available
+                if (typeof(Storage) === "undefined") {
+                    console.warn('localStorage tidak tersedia, data tidak akan tersimpan');
+                    return;
+                }
+
+                // Initialize arsip data if not exists
+                if (!localStorage.getItem(STORAGE_KEYS.ARSIP_DATA)) {
+                    localStorage.setItem(STORAGE_KEYS.ARSIP_DATA, JSON.stringify(defaultArsipData));
+                }
+
+                // Initialize peminjaman data if not exists
+                if (!localStorage.getItem(STORAGE_KEYS.PEMINJAMAN_DATA)) {
+                    localStorage.setItem(STORAGE_KEYS.PEMINJAMAN_DATA, JSON.stringify([]));
+                }
+
+                // Initialize current ID if not exists
+                if (!localStorage.getItem(STORAGE_KEYS.CURRENT_ID)) {
+                    localStorage.setItem(STORAGE_KEYS.CURRENT_ID, '1');
+                }
+
+                // Set last backup timestamp
+                localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, new Date().toISOString());
+
+            } catch (error) {
+                console.error('Error initializing localStorage:', error);
+            }
+        }
+
+        // Load all data from localStorage
+        function loadDataFromStorage() {
+            try {
+                // Load arsip data
+                const savedArsipData = localStorage.getItem(STORAGE_KEYS.ARSIP_DATA);
+                if (savedArsipData) {
+                    arsipData = JSON.parse(savedArsipData);
+                } else {
+                    arsipData = [...defaultArsipData];
+                }
+
+                // Load peminjaman data
+                const savedPeminjamanData = localStorage.getItem(STORAGE_KEYS.PEMINJAMAN_DATA);
+                if (savedPeminjamanData) {
+                    peminjamanData = JSON.parse(savedPeminjamanData);
+                }
+
+                // Load current ID
+                const savedId = localStorage.getItem(STORAGE_KEYS.CURRENT_ID);
+                if (savedId) {
+                    currentPeminjamanId = parseInt(savedId);
+                }
+
+                console.log('Data berhasil dimuat dari localStorage');
+            } catch (error) {
+                console.error('Error loading data from localStorage:', error);
+                // Fallback to default data
+                arsipData = [...defaultArsipData];
+                peminjamanData = [];
+                currentPeminjamanId = 1;
+            }
+        }
+
+        // Save all data to localStorage
+        function saveAllDataToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.ARSIP_DATA, JSON.stringify(arsipData));
+                localStorage.setItem(STORAGE_KEYS.PEMINJAMAN_DATA, JSON.stringify(peminjamanData));
+                localStorage.setItem(STORAGE_KEYS.CURRENT_ID, currentPeminjamanId.toString());
+                localStorage.setItem(STORAGE_KEYS.LAST_BACKUP, new Date().toISOString());
+                
+                console.log('Data berhasil disimpan ke localStorage');
+            } catch (error) {
+                console.error('Error saving data to localStorage:', error);
+                
+                // Handle quota exceeded error
+                if (error.name === 'QuotaExceededError') {
+                    alert('Penyimpanan penuh! Silakan hapus beberapa data lama atau bersihkan browser cache.');
+                }
+            }
+        }
+
+        // Export data as JSON file
+        function exportData() {
+            try {
+                const exportData = {
+                    arsipData: arsipData,
+                    peminjamanData: peminjamanData,
+                    currentPeminjamanId: currentPeminjamanId,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0'
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `backup_arsip_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                alert('Data berhasil diekspor!');
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('Gagal mengekspor data!');
+            }
+        }
+
+        // Import data from JSON file
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate imported data structure
+                    if (importedData.arsipData && importedData.peminjamanData) {
+                        if (confirm('Apakah Anda yakin ingin mengganti semua data dengan data yang diimpor? Data saat ini akan hilang!')) {
+                            arsipData = importedData.arsipData;
+                            peminjamanData = importedData.peminjamanData;
+                            currentPeminjamanId = importedData.currentPeminjamanId || 1;
+                            
+                            saveAllDataToStorage();
+                            loadArsipOptions();
+                            updateDashboard();
+                            loadTrackingTable();
+                            
+                            alert('Data berhasil diimpor!');
+                        }
+                    } else {
+                        alert('Format file tidak valid!');
+                    }
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    alert('Gagal mengimpor data! Pastikan file dalam format JSON yang benar.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Apakah Anda yakin ingin menghapus SEMUA data? Tindakan ini tidak dapat dibatalkan!')) {
+                if (confirm('Konfirmasi sekali lagi: SEMUA data peminjaman dan arsip akan dihapus!')) {
+                    try {
+                        localStorage.removeItem(STORAGE_KEYS.ARSIP_DATA);
+                        localStorage.removeItem(STORAGE_KEYS.PEMINJAMAN_DATA);
+                        localStorage.removeItem(STORAGE_KEYS.CURRENT_ID);
+                        
+                        // Reset to default
+                        arsipData = [...defaultArsipData];
+                        peminjamanData = [];
+                        currentPeminjamanId = 1;
+                        
+                        saveAllDataToStorage();
+                        loadArsipOptions();
+                        updateDashboard();
+                        loadTrackingTable();
+                        
+                        alert('Semua data berhasil dihapus dan direset ke default!');
+                    } catch (error) {
+                        console.error('Error clearing data:', error);
+                        alert('Gagal menghapus data!');
+                    }
+                }
+            }
+        }
+
+        // Get storage info
+        function getStorageInfo() {
+            try {
+                let totalSize = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        totalSize += localStorage[key].length;
+                    }
+                }
+                
+                const lastBackup = localStorage.getItem(STORAGE_KEYS.LAST_BACKUP);
+                const arsipCount = arsipData.length;
+                const peminjamanCount = peminjamanData.length;
+                
+                return {
+                    totalSize: (totalSize / 1024).toFixed(2) + ' KB',
+                    lastBackup: lastBackup ? new Date(lastBackup).toLocaleString('id-ID') : 'Tidak ada',
+                    arsipCount: arsipCount,
+                    peminjamanCount: peminjamanCount
+                };
+            } catch (error) {
+                console.error('Error getting storage info:', error);
+                return null;
+            }
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            // Update data when switching to certain pages
+            if (pageId === 'dashboard') {
+                updateDashboard();
+            } else if (pageId === 'tracking') {
+                loadTrackingTable();
+            } else if (pageId === 'pengaturan') {
+                refreshStorageInfo();
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date();
+            document.getElementById('tanggalPinjam').value = today.toISOString().split('T')[0];
+        }
+
+        function loadArsipOptions() {
+            const select = document.getElementById('kodeArsip');
+            select.innerHTML = `
+                <option value="">Pilih Arsip</option>
+                <option value="PIDUM">PIDUM</option>
+                <option value="PIDSUS">PIDSUS</option>
+                <option value="DATUN">DATUN</option>
+                <option value="PEMBINAAN">PEMBINAAN</option>
+                <option value="INTEL">INTEL</option>
+            `;
+        }
+
+        function loadTrackingTable() {
+            const tbody = document.getElementById('trackingTable');
+            tbody.innerHTML = '';
+            
+            if (peminjamanData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #757575;">Belum ada data peminjaman</td></tr>';
+                return;
+            }
+            
+            peminjamanData.forEach(peminjaman => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-label="No. Peminjaman">PJM-${peminjaman.id.toString().padStart(4, '0')}</td>
+                    <td data-label="Peminjam">${peminjaman.nama}</td>
+                    <td data-label="Arsip">${peminjaman.kodeArsip}</td>
+                    <td data-label="Tgl. Pinjam">${peminjaman.tanggalPinjam}</td>
+                    <td data-label="Status"><span class="status ${peminjaman.status}">${getStatusText(peminjaman.status)}</span></td>
+                    <td data-label="Aksi">
+                        <button class="btn" onclick="updateStatus(${peminjaman.id})">✏️ Update</button>
+                        <button class="btn btn-secondary" onclick="cetakPeminjaman(${peminjaman.id})">🖨️ Cetak</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalPeminjaman').textContent = peminjamanData.length;
+            document.getElementById('menungguPersetujuan').textContent = peminjamanData.filter(p => p.status === 'pending').length;
+            document.getElementById('sedangDipinjam').textContent = peminjamanData.filter(p => p.status === 'approved').length;
+            
+            // Load recent loans
+            const recentLoans = document.getElementById('recentLoans');
+            recentLoans.innerHTML = '';
+            
+            if (peminjamanData.length === 0) {
+                recentLoans.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #757575;">Belum ada data peminjaman</td></tr>';
+                return;
+            }
+            
+            const recent = peminjamanData.slice(-5).reverse();
+            recent.forEach(peminjaman => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-label="No. Peminjaman">PJM-${peminjaman.id.toString().padStart(4, '0')}</td>
+                    <td data-label="Peminjam">${peminjaman.nama}</td>
+                    <td data-label="Arsip">${peminjaman.kodeArsip}</td>
+                    <td data-label="Tanggal">${peminjaman.tanggalPinjam}</td>
+                    <td data-label="Status"><span class="status ${peminjaman.status}">${getStatusText(peminjaman.status)}</span></td>
+                `;
+                recentLoans.appendChild(row);
+            });
+        }
+
+        function submitPeminjaman() {
+            const form = {
+                nama: document.getElementById('namaPeminjam').value,
+                nip: document.getElementById('nipPeminjam').value,
+                jabatan: document.getElementById('jabatan').value,
+                email: document.getElementById('email').value,
+                kodeArsip: document.getElementById('kodeArsip').value,
+                keperluan: document.getElementById('keperluan').value,
+                tanggalPinjam: document.getElementById('tanggalPinjam').value
+            };
+            
+            // Validation
+            if (!form.nama || !form.nip || !form.jabatan || !form.kodeArsip || !form.keperluan || !form.tanggalPinjam) {
+                showAlert('error', 'Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+            
+            // Add to peminjaman data
+            const peminjaman = {
+                id: currentPeminjamanId++,
+                ...form,
+                status: 'pending',
+                tanggalPengajuan: new Date().toISOString().split('T')[0]
+            };
+            
+            peminjamanData.push(peminjaman);
+            saveAllDataToStorage();
+            
+            // Update arsip status
+            const arsip = arsipData.find(a => a.kode === form.kodeArsip);
+            if (arsip) {
+                arsip.status = 'Dipinjam';
+            }
+            
+            showAlert('success', `Peminjaman berhasil diajukan dengan nomor PJM-${peminjaman.id.toString().padStart(4, '0')}!`);
+            resetForm();
+            loadArsipOptions();
+        }
+
+        function resetForm() {
+            document.getElementById('peminjamanForm').reset();
+            document.getElementById('kodeArsip').value = '';
+            document.getElementById('keperluan').value = '';
+            document.getElementById('tanggalPinjam').value = '';
+            setDefaultDates();
+        }
+
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showDetailArsip(kode) {
+            const arsip = arsipData.find(a => a.kode === kode);
+            if (!arsip) return;
+            
+            const content = document.getElementById('detailArsipContent');
+            content.innerHTML = `
+                <p><strong>Kode Arsip:</strong> ${arsip.kode}</p>
+                <p><strong>Judul/Deskripsi:</strong> ${arsip.judul}</p>
+                <p><strong>Kategori:</strong> ${arsip.kategori}</p>
+                <p><strong>Tahun:</strong> ${arsip.tahun}</p>
+                <p><strong>Status:</strong> <span class="status ${arsip.status === 'Tersedia' ? 'approved' : 'pending'}">${arsip.status}</span></p>
+                <p><strong>Lokasi Penyimpanan:</strong> Rak ${Math.floor(Math.random() * 10) + 1}, Baris ${Math.floor(Math.random() * 5) + 1}</p>
+            `;
+            
+            document.getElementById('modalDetailArsip').style.display = 'flex';
+        }
+
+        function updateStatus(peminjamanId) {
+            const peminjaman = peminjamanData.find(p => p.id === peminjamanId);
+            if (!peminjaman) return;
+            
+            const content = document.getElementById('updateStatusContent');
+            content.innerHTML = `
+                <p><strong>No. Peminjaman:</strong> PJM-${peminjaman.id.toString().padStart(4, '0')}</p>
+                <p><strong>Peminjam:</strong> ${peminjaman.nama}</p>
+                <p><strong>Arsip:</strong> ${peminjaman.kodeArsip}</p>
+                <p><strong>Status Saat Ini:</strong> <span class="status ${peminjaman.status}">${getStatusText(peminjaman.status)}</span></p>
+                
+                <div class="form-group">
+                    <label for="newStatus">Status Baru:</label>
+                    <select id="newStatus">
+                        <option value="pending" ${peminjaman.status === 'pending' ? 'selected' : ''}>Menunggu Persetujuan</option>
+                        <option value="approved" ${peminjaman.status === 'approved' ? 'selected' : ''}>Disetujui</option>
+                        <option value="returned" ${peminjaman.status === 'returned' ? 'selected' : ''}>Dikembalikan</option>
+                        <option value="rejected" ${peminjaman.status === 'rejected' ? 'selected' : ''}>Ditolak</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="statusNote">Catatan:</label>
+                    <textarea id="statusNote" rows="3" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveStatusUpdate(${peminjamanId})">💾 Simpan</button>
+                <button class="btn btn-secondary" onclick="closeModal('modalUpdateStatus')">❌ Batal</button>
+            `;
+            
+            document.getElementById('modalUpdateStatus').style.display = 'flex';
+        }
+
+        function saveStatusUpdate(peminjamanId) {
+            const peminjaman = peminjamanData.find(p => p.id === peminjamanId);
+            const newStatus = document.getElementById('newStatus').value;
+            const note = document.getElementById('statusNote').value;
+            
+            peminjaman.status = newStatus;
+            peminjaman.catatan = note;
+            saveAllDataToStorage();
+            
+            // Update arsip status
+            const arsip = arsipData.find(a => a.kode === peminjaman.kodeArsip);
+            if (arsip) {
+                if (newStatus === 'returned' || newStatus === 'rejected') {
+                    arsip.status = 'Tersedia';
+                } else if (newStatus === 'approved') {
+                    arsip.status = 'Dipinjam';
+                }
+            }
+            
+            closeModal('modalUpdateStatus');
+            loadTrackingTable();
+            loadArsipOptions();
+            updateDashboard();
+            
+            alert('Status peminjaman berhasil diupdate!');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Menunggu',
+                'approved': 'Disetujui',
+                'returned': 'Dikembalikan',
+                'rejected': 'Ditolak'
+            };
+            return statusMap[status] || status;
+        }
+
+        function filterTracking() {
+            const searchTerm = document.getElementById('searchTracking').value.toLowerCase();
+            const rows = document.querySelectorAll('#trackingTable tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function generateLaporan() {
+            const bulan = document.getElementById('filterBulan').value;
+            const tahun = document.getElementById('filterTahun').value;
+            const status = document.getElementById('filterStatus').value;
+            
+            let filteredData = [...peminjamanData];
+            
+            if (bulan) {
+                filteredData = filteredData.filter(p => {
+                    const peminjamanBulan = new Date(p.tanggalPinjam).getMonth() + 1;
+                    return peminjamanBulan == bulan;
+                });
+            }
+            
+            if (tahun) {
+                filteredData = filteredData.filter(p => {
+                    const peminjamanTahun = new Date(p.tanggalPinjam).getFullYear();
+                    return peminjamanTahun == tahun;
+                });
+            }
+            
+            if (status) {
+                filteredData = filteredData.filter(p => p.status === status);
+            }
+            
+            const resultDiv = document.getElementById('laporanResult');
+            
+            if (filteredData.length === 0) {
+                resultDiv.innerHTML = '<p style="text-align: center; color: #757575;">Tidak ada data yang sesuai dengan filter</p>';
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No. Peminjaman</th>
+                            <th>Peminjam</th>
+                            <th>Arsip</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredData.forEach(peminjaman => {
+                tableHTML += `
+                    <tr>
+                        <td data-label="No. Peminjaman">PJM-${peminjaman.id.toString().padStart(4, '0')}</td>
+                        <td data-label="Peminjam">${peminjaman.nama}</td>
+                        <td data-label="Arsip">${peminjaman.kodeArsip}</td>
+                        <td data-label="Tanggal Pinjam">${peminjaman.tanggalPinjam}</td>
+                        <td data-label="Status"><span class="status ${peminjaman.status}">${getStatusText(peminjaman.status)}</span></td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            
+            resultDiv.innerHTML = `
+                <p><strong>Total Data:</strong> ${filteredData.length} peminjaman</p>
+                ${tableHTML}
+            `;
+        }
+
+        function exportLaporan() {
+            alert('Fitur export Excel akan segera tersedia!');
+        }
+
+        // Refresh storage information display
+        function refreshStorageInfo() {
+            const info = getStorageInfo();
+            const storageInfoDiv = document.getElementById('storageInfo');
+            
+            if (info) {
+                storageInfoDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>📁 Total Data Arsip</strong><br>
+                            <span style="font-size: 24px; color: #1e3c72;">${info.arsipCount}</span> arsip
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>📋 Total Peminjaman</strong><br>
+                            <span style="font-size: 24px; color: #1e3c72;">${info.peminjamanCount}</span> peminjaman
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>💾 Ukuran Data</strong><br>
+                            <span style="font-size: 24px; color: #1e3c72;">${info.totalSize}</span>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <strong>🕒 Backup Terakhir</strong><br>
+                            <span style="font-size: 12px; color: #666;">${info.lastBackup}</span>
+                        </div>
+                    </div>
+                    <div style="background: #e8f5e8; padding: 10px; border-radius: 6px; font-size: 14px;">
+                        ✅ <strong>Status:</strong> Data tersimpan dengan aman di browser Anda
+                    </div>
+                `;
+            } else {
+                storageInfoDiv.innerHTML = `
+                    <div style="background: #ffe6e6; padding: 15px; border-radius: 8px; color: #d32f2f;">
+                        ⚠️ <strong>Error:</strong> Tidak dapat memuat informasi penyimpanan
+                    </div>
+                `;
+            }
+        }
+
+        // Clean old data (older than 1 year)
+        function cleanOldData() {
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            
+            const oldDataCount = peminjamanData.filter(p => {
+                const peminjamanDate = new Date(p.tanggalPinjam);
+                return p.status === 'returned' && peminjamanDate < oneYearAgo;
+            }).length;
+            
+            if (oldDataCount === 0) {
+                alert('Tidak ada data lama yang perlu dibersihkan.');
+                return;
+            }
+            
+            if (confirm(`Ditemukan ${oldDataCount} data peminjaman lama yang sudah dikembalikan lebih dari 1 tahun. Hapus data ini?`)) {
+                peminjamanData = peminjamanData.filter(p => {
+                    const peminjamanDate = new Date(p.tanggalPinjam);
+                    return !(p.status === 'returned' && peminjamanDate < oneYearAgo);
+                });
+                
+                saveAllDataToStorage();
+                updateDashboard();
+                loadTrackingTable();
+                refreshStorageInfo();
+                
+                alert(`${oldDataCount} data lama berhasil dihapus!`);
+            }
+        }
+
+        function cetakPeminjaman(peminjamanId) {
+            const peminjaman = peminjamanData.find(p => p.id === peminjamanId);
+            if (!peminjaman) return;
+            
+            // Create print content
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Surat Peminjaman Arsip - PJM-${peminjaman.id.toString().padStart(4, '0')}</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', serif;
+                            margin: 20px;
+                            line-height: 1.6;
+                            color: #000;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            border-bottom: 3px solid #2d5016;
+                            padding-bottom: 20px;
+                        }
+                        .logo {
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                        }
+                        .title {
+                            font-size: 18px;
+                            font-weight: bold;
+                            margin: 10px 0;
+                        }
+                        .subtitle {
+                            font-size: 14px;
+                            margin-bottom: 5px;
+                        }
+                        .content {
+                            margin: 30px 0;
+                        }
+                        .form-row {
+                            display: flex;
+                            margin-bottom: 15px;
+                            align-items: flex-start;
+                        }
+                        .label {
+                            width: 200px;
+                            font-weight: bold;
+                            flex-shrink: 0;
+                        }
+                        .colon {
+                            width: 20px;
+                            flex-shrink: 0;
+                        }
+                        .value {
+                            flex: 1;
+                            border-bottom: 1px dotted #000;
+                            min-height: 20px;
+                            padding-bottom: 2px;
+                        }
+                        .signature-section {
+                            margin-top: 50px;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .signature-box {
+                            text-align: center;
+                            width: 200px;
+                        }
+                        .signature-line {
+                            border-bottom: 1px solid #000;
+                            height: 80px;
+                            margin-bottom: 10px;
+                        }
+                        .status-badge {
+                            display: inline-block;
+                            padding: 5px 15px;
+                            border-radius: 15px;
+                            font-weight: bold;
+                            font-size: 12px;
+                            text-transform: uppercase;
+                        }
+                        .status-pending {
+                            background: #fff3cd;
+                            color: #856404;
+                            border: 1px solid #856404;
+                        }
+                        .status-approved {
+                            background: #d4edda;
+                            color: #155724;
+                            border: 1px solid #155724;
+                        }
+                        .status-returned {
+                            background: #d1ecf1;
+                            color: #0c5460;
+                            border: 1px solid #0c5460;
+                        }
+                        .status-rejected {
+                            background: #f8d7da;
+                            color: #721c24;
+                            border: 1px solid #721c24;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="logo">📁</div>
+                        <div class="title">KEJAKSAAN NEGERI KOTA BEKASI</div>
+                        <div class="subtitle">SURAT PEMINJAMAN ARSIP</div>
+                        <div class="subtitle">No: PJM-${peminjaman.id.toString().padStart(4, '0')}</div>
+                    </div>
+                    
+                    <div class="content">
+                        <div class="form-row">
+                            <div class="label">Nama Peminjam</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.nama}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">NIP/NIK</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.nip}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Jabatan/Unit Kerja</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.jabatan}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Email</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.email || '-'}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Kode Arsip</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.kodeArsip}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Keperluan Peminjaman</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.keperluan}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Tanggal Peminjaman</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.tanggalPinjam}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Tanggal Pengajuan</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.tanggalPengajuan}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="label">Status</div>
+                            <div class="colon">:</div>
+                            <div class="value">
+                                <span class="status-badge status-${peminjaman.status}">${getStatusText(peminjaman.status)}</span>
+                            </div>
+                        </div>
+                        
+                        ${peminjaman.catatan ? `
+                        <div class="form-row">
+                            <div class="label">Catatan</div>
+                            <div class="colon">:</div>
+                            <div class="value">${peminjaman.catatan}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <div>Peminjam</div>
+                            <div class="signature-line"></div>
+                            <div>${peminjaman.nama}</div>
+                        </div>
+                        
+                        <div class="signature-box">
+                            <div>Petugas Arsip</div>
+                            <div class="signature-line"></div>
+                            <div>(...........................)</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; font-size: 12px; text-align: center; color: #666;">
+                        Dicetak pada: ${new Date().toLocaleDateString('id-ID', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Open print window
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            // Wait for content to load then print
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992930f016250cce',t:'MTc2MTEzODE2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
